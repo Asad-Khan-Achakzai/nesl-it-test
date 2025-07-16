@@ -1,0 +1,41 @@
+Issues in the code
+
+Issue 1: Using await Posts.find() without sorting at the database level
+
+It uses await Posts.find() without sorting and then attempts to sort in memory.
+
+This approach can be dangerous and inefficient with large datasets.
+
+Sorting in JavaScript after retrieval can produce inconsistent or duplicate results if find() is called while data is being concurrently updated.
+
+Solution
+Order in the database query js
+const posts = await Posts.find().sort({ created: -1 });
+
+
+Issue 3: Lack of error handling
+
+In the case of a database issue, the application can hang unresponsive or crash.
+
+2. Solutions
+
+Implement error handling js
+async function getSortedPosts(req, res) {
+
+try {
+
+const posts = await Posts.find().sort({ created: -1 }); 
+res.json(posts); 
+
+} catch (err) {
+
+console.error('Error fetching posts:', err); 
+
+res.status(500).json({ error: 'Failed to fetch posts' }); 
+}
+
+Issue 3: Fetching all the posts is not scalable, especially when dealing with large datasets.
+There can 1000s of posts in the database, and fetching all of them at once can be inefficient.
+
+Solution:
+Use pagination to limit the number of posts fetched at once.
